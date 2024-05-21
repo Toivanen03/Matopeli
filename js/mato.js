@@ -2,7 +2,6 @@ let moveUp;             //Ohjauksessa käytettävät muuttujat. Lisätään muut
 let moveDown;
 let moveLeft;
 let moveRight;
-//Lisätty kommentti gitin testaamiseksi
 
 
 
