@@ -37,7 +37,7 @@
 
     .header-worm {
         width: 55px;
-        border: 1px solid var(--vaalea);
+        border: 1px solid lightgray;
         border-radius: 6px;
     }
 
@@ -124,5 +124,12 @@
         margin-top: 3vh;
         height: auto;
         margin-bottom: 20vh;
+        border: 4px lightgray solid;
+        border-radius: 20px;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 5px;
+        box-shadow: 30px 30px 10px rgba(0, 0, 0, 0.4);
     }
 }
