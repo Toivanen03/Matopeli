@@ -7,10 +7,12 @@ let oldDirection = "right";
 
 let difficultyOption = [17, 15, 13, 11, 9, 7, 5, 3, 1];     //Vaikeustason vaihtoehdot. Arvo vastaa näytön päivitystaajuutta.
 let difficulty = difficultyOption[0];                       //Indeksi 0 on helpoin vaikeustaso, indeksi 8 nopein ja vaikein.
-let wormLength = 60;                                        //Madon pituus
+
+let wormLength = 40;                                        //Madon pituus
 let wormX = 70;                                             //Madon aloituskoordinaatit
 let wormY = 194;
-
+let wormSegments = [];
+let turnPoints = [];
 
 
 
@@ -32,7 +34,6 @@ function startGame() {                                              //Käynnist�
         if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(event.key) > -1) {
             event.preventDefault();                                 //Estetään oletustoiminto eli tässä tapauksessa sivun vieritys
         }
-
         if (event.key === "ArrowUp" && direction !== "down") {      //Asetetaan uusi suunta vain, jos se ei ole vastakkainen
             setMoveDirection("up");                                 //nykyiselle suunnalle. Kutsuttavalle funktiolle annetaan
         }                                                           //uusi suunta parametrina.
@@ -71,8 +72,13 @@ let myGameArea = {                                                  //Luodaan ca
 
 
 function setMoveDirection(newDirection) {
-    moveUp = moveDown = moveLeft = moveRight = false;               //Kaikki suuntamuuttujat asetetaan arvoon false,
-    direction = newDirection;                                       //ennen kuin uusi suunta määrätään.
+    if (newDirection !== direction) {
+                                                                //Tallennetaan nykyinen ja uusi sijainti
+        turnPoints.push({ x: wormSegments[0].x, y: wormSegments[0].y, newDirection: newDirection });
+    }
+    moveUp = moveDown = moveLeft = moveRight = false;           //Kaikki suuntamuuttujat asetetaan arvoon false,
+    direction = newDirection;                                   //ennen kuin uusi suunta määrätään.
+
     if (newDirection === "up") {
         moveUp = true;
     } else if (newDirection === "down") {
@@ -83,6 +89,7 @@ function setMoveDirection(newDirection) {
         moveRight = true;
     }
 }
+
 
 
 
@@ -103,87 +110,87 @@ function drawGameArea(startX, startY, width, height) {              //Piirtää 
 
 
 
-function generateWorm() {                       //Madon funktio
-    let breakpointX;
-    let breakpointY;
-
-    this.wormX = wormX;
-    this.wormY = wormY;
-    this.tailX = wormX - wormLength;
-    this.tailY = wormY;
-    this.update = function() {
+function generateWorm(x, y) {
+    this.wormX = x;
+    this.wormY = y;
+    for (let i = 0; i < wormLength; i++) {
+        wormSegments.push({ x: x - i * 2, y: y });          //Tallennetaan madon piirtämiseen käytettävät koordinaatit listaan
+    }
+    this.update = function() {                              //Päivitetään madon pään sijainti
         if (moveUp) {
             this.wormY -= 2;
-            this.tailY -= 2;
-            breakpointY = this.wormY;
         }
         if (moveDown) {
             this.wormY += 2;
-            this.tailY += 2;
-            breakpointY = this.wormY;
         }
         if (moveLeft) {
             this.wormX -= 2;
-            this.tailX -= 2;
-            breakpointX = this.wormX;
         }
         if (moveRight) {
             this.wormX += 2;
-            this.tailX += 2;
-            breakpointX = this.wormX;
         }
-        let coordinates = [this.wormX, this.wormY, this.tailX, this.tailY]
-        checkBreakPoint(coordinates, breakpointX, breakpointY);
-    }
+        wormSegments.unshift({ x: this.wormX, y: this.wormY });     //Tallennetaan pään uusi sijainti
+
+        if (wormSegments.length > wormLength) {                     //Lyhennetään matoa peräpäästä
+            wormSegments.pop();
+        }
+        if (turnPoints.length > 0) {                                //Pidetään kirjaa käännöksistä
+            let currentTurn = turnPoints[0];
+            if (this.wormX === currentTurn.x && this.wormY === currentTurn.y) {
+                direction = currentTurn.newDirection;
+                turnPoints.shift();
+            }
+        }
+        drawWorm();
+    };
 }
 
 
 
 
 
-function checkBreakPoint(coordinates, breakpointX, breakpointY) {
-    let wormX = coordinates[0];
-    let wormY = coordinates[1];
-    let tailX = coordinates[2];
-    let tailY = coordinates[3];
-
-    if (oldDirection != direction) {
-        //  TÄSTÄ PITÄISI JATKAA MADON SUUNNANVAIHTOA
-        oldDirection = direction;
+function drawWorm() {                                                       //Piirtää madon tallennettujen koordinaattien mukaisesti
+    let ctx = myGameArea.context;
+    ctx.clearRect(0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
+    for (let i = 0; i < wormSegments.length - 1; i++) {
+        ctx.beginPath();
+        ctx.moveTo(wormSegments[i].x, wormSegments[i].y);
+        ctx.lineTo(wormSegments[i + 1].x, wormSegments[i + 1].y);
+        ctx.lineWidth = 12;
+        ctx.strokeStyle = "pink";
+        ctx.lineCap = "round";
+        ctx.stroke();
     }
-    drawWorm(wormX, wormY, tailX, tailY);
+
+    let head = wormSegments[0];                                             //Piirtää madolle silmät
+    ctx.beginPath();
+    ctx.arc(head.x - 2, head.y - 3, 1.5, 0, 2 * Math.PI);
+    ctx.fillStyle = "darkbrown";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(head.x - 2, head.y + 3, 1.5, 0, 2 * Math.PI);
+    ctx.fillStyle = "darkbrown";
+    ctx.fill();
+
+    checkCollision(head);
 }
 
 
 
 
 
-function drawWorm(wormX, wormY, tailX, tailY) {
-    let ctx = myGameArea.context;                   //Piirtää madon
-    ctx.beginPath();
-    ctx.moveTo(wormX, wormY);
-    ctx.lineTo(tailX, tailY);
-    ctx.lineWidth = 12;
-    ctx.strokeStyle = "pink";
-    ctx.lineCap = "round";
-    ctx.stroke();
-
-    let eyeOne = [[wormX - 2], [wormY - 3], [1.5], [0], [2 * Math.PI]];
-    let eyeTwo = [[wormX - 2], [wormY + 3], [1.5], [0], [2 * Math.PI]];
-
-    ctx.beginPath();                                //Piirtää madolle silmät
-    ctx.arc.apply(ctx, eyeOne);
-    ctx.fillStyle = "darkbrown";
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc.apply(ctx, eyeTwo);
-    ctx.fillStyle = "darkbrown";
-    ctx.fill();
-
-    if (wormX <= 9 || wormX >= 791 || wormY <= 9 || wormY >= 391) {         //Tarkistetaan osuma alueen reunoihin
+function checkCollision(head) {
+    if (head.x <= 9 || head.x >= 791 || head.y <= 9 || head.y >= 391) {     //Tarkistetaan osuma alueen reunoihin
         gameOver();
     }
+
+    for (let i = 1; i < wormSegments.length; i++) {
+        if (head.x === wormSegments[i].x && head.y === wormSegments[i].y) {
+            gameOver();
+        }
+    }
+    return false;
 }
 
 
@@ -192,8 +199,8 @@ function drawWorm(wormX, wormY, tailX, tailY) {
 
 function updateGameArea() {         //Kutsuu pelin toimintoja, eli huolehtii näytön päivityksestä.
     myGameArea.clear();
-    gameArea.update();    
     worm.update();
+    gameArea.update();    
 }
 
 
