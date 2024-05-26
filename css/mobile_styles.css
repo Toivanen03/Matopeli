@@ -131,4 +131,8 @@
         margin-top: 5vh;
     }
 
+    #appleImg {
+        display: none;
+    }
+
 }

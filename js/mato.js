@@ -3,21 +3,37 @@ let moveDown;
 let moveLeft;
 let moveRight = true;
 let direction = "right";
-let oldDirection = "right";
-
-let difficultyOption = [17, 15, 13, 11, 9, 7, 5, 3, 1];     //Vaikeustason vaihtoehdot. Arvo vastaa näytön päivitystaajuutta.
-let difficulty = difficultyOption[0];                       //Indeksi 0 on helpoin vaikeustaso, indeksi 8 nopein ja vaikein.
+   
+let difficultyOption = {1: 17,                                    //Vaikeustason vaihtoehdot. Arvo vastaa näytön päivitystaajuutta.
+    2: 15,
+    3: 13,
+    4: 11,
+    5: 9,
+    6: 7,
+    7: 5,
+    8: 3,
+    9: 1
+};
+let difficulty = 5;
+let speed = difficultyOption[difficulty];
 
 let wormLength = 40;                                        //Madon pituus
 let wormX = 70;                                             //Madon aloituskoordinaatit
 let wormY = 194;
-let wormSegments = [];
+let wormSegments = [];                                      //Listat madon sijainnille ja käännöksille
 let turnPoints = [];
+
+let appleX;                                                 //Omenan koordinaatit
+let appleY;
+
+let points = 0;
+
 
 
 
 
 window.onload = function() {                                //Ohjelman käynnistys sivun latautuessa
+    generateAppleCoordinates();
     startGame();
 }
 
@@ -57,7 +73,7 @@ let myGameArea = {                                                  //Luodaan ca
         this.context = this.canvas.getContext("2d");
         let gameAreaDiv = document.getElementById("gameArea");
         gameAreaDiv.appendChild(this.canvas);                           //Asetetaan canvas div-elementtiin html-sivulla
-        this.interval = setInterval(updateGameArea, difficulty);        //Päivitetään näyttö, eli pelitilanne vaikeustason mukaisesti
+        this.interval = setInterval(updateGameArea, speed);        //Päivitetään näyttö, eli pelitilanne vaikeustason mukaisesti
     },
     clear: function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);    //Näytön tyhjennys. Estää edellisen piirron jäämisen
@@ -173,24 +189,70 @@ function drawWorm() {                                                       //Pi
     ctx.fillStyle = "darkbrown";
     ctx.fill();
 
-    checkCollision(head);
+    generateApple();
+    checkCollision();
 }
 
 
 
 
 
-function checkCollision(head) {
-    if (head.x <= 9 || head.x >= 791 || head.y <= 9 || head.y >= 391) {     //Tarkistetaan osuma alueen reunoihin
+function generateAppleCoordinates() {
+    let validApplePosition = false;
+    while (!validApplePosition) {
+        appleX = Math.floor(Math.random() * 385) * 2 + 10;
+        appleY = Math.floor(Math.random() * 185) * 2 + 10;
+        validApplePosition = true;
+        for (let i = 0; i < wormSegments.length; i++) {
+            if (Math.abs(wormSegments[i].x - appleX) < 12 && Math.abs(wormSegments[i].y - appleY) < 12) {
+                validApplePosition = false;
+                break;
+            }
+        }
+    }
+}
+
+
+function generateApple() {
+    let ctx = myGameArea.context;
+    let appleImg = document.getElementById("appleImg");
+    ctx.drawImage(appleImg, appleX, appleY, 20, 25);
+
+    checkCollision(appleX, appleY);
+}
+
+
+
+
+
+function checkCollision(appleX, appleY) {
+    let head = wormSegments[0];
+
+    if (head.x <= 10 || head.x >= 790 || head.y <= 10 || head.y >= 390) {       //Tarkistetaan osuma alueen reunoihin
         gameOver();
     }
 
     for (let i = 1; i < wormSegments.length; i++) {
-        if (head.x === wormSegments[i].x && head.y === wormSegments[i].y) {
+        if (head.x === wormSegments[i].x && head.y === wormSegments[i].y) {     //Tarkistetaan madon osuma itseensä
             gameOver();
         }
     }
-    return false;
+
+    if (Math.abs((head.x -8) - appleX) <= 12 && Math.abs((head.y -10) - appleY) <= 12) {   //Tarkistetaan omenan syönti
+        points += difficulty;
+        wormLength += 20;
+        drawPoints();
+        generateAppleCoordinates();
+    }
+}
+
+
+
+
+
+function drawPoints() {
+    return;
+    //TÄHÄN FUNKTIOON PISTEIDEN PIIRTO
 }
 
 
