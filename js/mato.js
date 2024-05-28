@@ -27,15 +27,46 @@ let appleX;                                                 //Omenan koordinaati
 let appleY;
 
 let points = 0;
+const savedHiScore = localStorage.getItem("hiScore");
+let hiScore = savedHiScore ? parseInt(savedHiScore) : 0;
 
 
 
 
 
-window.onload = function() {                                //Ohjelman käynnistys sivun latautuessa
+window.onload = function() {
     generateAppleCoordinates();
+    loadScripts(function() {
+        startPoints();
+        starthiScore();
+    });
     startGame();
 }
+
+function loadScripts(callback) {
+    let scriptsToLoad = 2;
+    let scriptsLoaded = 0;
+
+    function scriptLoaded() {
+        scriptsLoaded++;
+        if (scriptsLoaded === scriptsToLoad) {
+            callback();
+        }
+    }
+
+    let pointsScript = document.createElement("script");
+    pointsScript.src = "js/matoPoints.js";
+    pointsScript.type = "text/javascript";
+    pointsScript.onload = scriptLoaded;
+    document.body.appendChild(pointsScript);
+
+    let hiScoreScript = document.createElement("script");
+    hiScoreScript.src = "js/hiScore.js";
+    hiScoreScript.type = "text/javascript";
+    hiScoreScript.onload = scriptLoaded;
+    document.body.appendChild(hiScoreScript);
+}
+
 
 
 
@@ -228,7 +259,7 @@ function generateApple() {
 function checkCollision(appleX, appleY) {
     let head = wormSegments[0];
 
-    if (head.x <= 10 || head.x >= 790 || head.y <= 10 || head.y >= 390) {       //Tarkistetaan osuma alueen reunoihin
+    if (head.x <= 12 || head.x >= 792 || head.y <= 12 || head.y >= 392) {       //Tarkistetaan osuma alueen reunoihin
         gameOver();
     }
 
@@ -241,18 +272,8 @@ function checkCollision(appleX, appleY) {
     if (Math.abs((head.x -8) - appleX) <= 12 && Math.abs((head.y -10) - appleY) <= 12) {   //Tarkistetaan omenan syönti
         points += difficulty;
         wormLength += 20;
-        drawPoints();
         generateAppleCoordinates();
     }
-}
-
-
-
-
-
-function drawPoints() {
-    return;
-    //TÄHÄN FUNKTIOON PISTEIDEN PIIRTO
 }
 
 
@@ -270,5 +291,8 @@ function updateGameArea() {         //Kutsuu pelin toimintoja, eli huolehtii nä
 
 
 function gameOver() {
+    if (points > oldHiScore) {
+        localStorage.setItem('hiScore', points.toString());
+    }
     myGameArea.stop();
 }

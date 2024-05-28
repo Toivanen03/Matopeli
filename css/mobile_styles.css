@@ -135,4 +135,12 @@
         display: none;
     }
 
+    #pointsHeader {
+        display: none;
+    }
+
+    #hiScoreHeader {
+        display: none;
+    }
+
 }
