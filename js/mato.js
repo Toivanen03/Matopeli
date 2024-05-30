@@ -4,18 +4,19 @@ let moveLeft;
 let moveRight = true;
 let direction = "right";
    
-let difficultyOption = {1: 17,                                    //Vaikeustason vaihtoehdot. Arvo vastaa näytön päivitystaajuutta.
-    2: 15,
-    3: 13,
-    4: 11,
-    5: 9,
-    6: 7,
-    7: 5,
-    8: 3,
-    9: 1
+let difficultyOption = {     //Vaikeustason vaihtoehdot. Arvo vastaa näytön päivitystaajuutta.
+1: 17,  
+2: 15,
+3: 13,
+4: 11,
+5: 9,
+6: 7,
+7: 5,
+8: 3,
+9: 1
 };
-let difficulty = 5;
-let speed = difficultyOption[difficulty];
+let difficulty = localStorage.getItem("difficulty") ? parseInt(localStorage.getItem("difficulty")) : 5;  //vaikeustaso localstoragesta, jos on asetettu. Muuten käyttöön  oletrusarvo 5.
+let speed = difficultyOption[difficulty]; //nopeuden määritys
 
 let wormLength = 40;                                        //Madon pituus
 let wormX = 70;                                             //Madon aloituskoordinaatit
@@ -29,10 +30,6 @@ let appleY;
 let points = 0;
 const savedHiScore = localStorage.getItem("hiScore");
 let hiScore = savedHiScore ? parseInt(savedHiScore) : 0;
-
-
-
-
 
 window.onload = function() {
     generateAppleCoordinates();
@@ -66,13 +63,27 @@ function loadScripts(callback) {
     hiScoreScript.onload = scriptLoaded;
     document.body.appendChild(hiScoreScript);
 }
-
-
-
-
-
+// Toistetaan ääni valitun asetuksen perusteella.
+function playSound(sound) {
+    let audioElement;
+    if (sound === "start") {
+        audioElement = document.getElementById("startSound");
+    } else if (sound === "apple") {
+        audioElement = document.getElementById("appleSound");
+    } else if (sound === "kumitvinkuu") {
+        audioElement = document.getElementById("kumitvinkuu");
+    } else if (sound === "gameover") {
+        audioElement = document.getElementById("gameOverSound");
+    }
+    if (audioElement) {
+        audioElement.play().catch(error => {
+            console.error("TESTIP, VIRHE ÄÄNENTOISTOSSA:", error);
+        });
+    }
+}
 
 function startGame() {                                              //Käynnistää canvasin ja päivittää näytön tapahtumia
+    playSound("start");
     myGameArea.start();
     gameArea = new drawGameArea(0, 0, 800, 400);                    //Kutsutaan funktiota luomaan canvas
     worm = new generateWorm(wormX, wormY);                          //Kutsutaan funktiota piirtämään mato
@@ -114,17 +125,12 @@ let myGameArea = {                                                  //Luodaan ca
     }
 }
 
-
-
-
-
 function setMoveDirection(newDirection) {
-    if (newDirection !== direction) {
-                                                                //Tallennetaan nykyinen ja uusi sijainti
+    if (newDirection !== direction) { // Tallennetaan nykyinen ja uusi sijainti
         turnPoints.push({ x: wormSegments[0].x, y: wormSegments[0].y, newDirection: newDirection });
     }
-    moveUp = moveDown = moveLeft = moveRight = false;           //Kaikki suuntamuuttujat asetetaan arvoon false,
-    direction = newDirection;                                   //ennen kuin uusi suunta määrätään.
+    moveUp = moveDown = moveLeft = moveRight = false; // Kaikki suuntamuuttujat asetetaan arvoon false,
+    direction = newDirection; // ennen kuin uusi suunta määrätään.
 
     if (newDirection === "up") {
         moveUp = true;
@@ -137,33 +143,24 @@ function setMoveDirection(newDirection) {
     }
 }
 
-
-
-
-
-
-function drawGameArea(startX, startY, width, height) {              //Piirtää reunat canvasiin
+function drawGameArea(startX, startY, width, height) { // Piirtää reunat canvasiin
     this.update = function() {
         let ctx = myGameArea.context;
         ctx.beginPath();
-        ctx.roundRect(startX, startY, width, height, [20]);         //Canvasin koordinaatit ja koko, sekä kulmien pyöristys
+        ctx.roundRect(startX, startY, width, height, [20]); // Canvasin koordinaatit ja koko, sekä kulmien pyöristys
         ctx.lineWidth = 5;
         ctx.strokeStyle = "lightgray";
         ctx.stroke();
     }
 }
 
-
-
-
-
 function generateWorm(x, y) {
     this.wormX = x;
     this.wormY = y;
     for (let i = 0; i < wormLength; i++) {
-        wormSegments.push({ x: x - i * 2, y: y });          //Tallennetaan madon piirtämiseen käytettävät koordinaatit listaan
+        wormSegments.push({ x: x - i * 2, y: y }); // Tallennetaan madon piirtämiseen käytettävät koordinaatit listaan
     }
-    this.update = function() {                              //Päivitetään madon pään sijainti
+    this.update = function() { // Päivitetään madon pään sijainti
         if (moveUp) {
             this.wormY -= 2;
         }
@@ -176,12 +173,12 @@ function generateWorm(x, y) {
         if (moveRight) {
             this.wormX += 2;
         }
-        wormSegments.unshift({ x: this.wormX, y: this.wormY });     //Tallennetaan pään uusi sijainti
+        wormSegments.unshift({ x: this.wormX, y: this.wormY }); // Tallennetaan pään uusi sijainti
 
-        if (wormSegments.length > wormLength) {                     //Lyhennetään matoa peräpäästä
+        if (wormSegments.length > wormLength) { // Lyhennetään matoa peräpäästä
             wormSegments.pop();
         }
-        if (turnPoints.length > 0) {                                //Pidetään kirjaa käännöksistä
+        if (turnPoints.length > 0) { // Pidetään kirjaa käännöksistä
             let currentTurn = turnPoints[0];
             if (this.wormX === currentTurn.x && this.wormY === currentTurn.y) {
                 direction = currentTurn.newDirection;
@@ -192,11 +189,7 @@ function generateWorm(x, y) {
     };
 }
 
-
-
-
-
-function drawWorm() {                                                       //Piirtää madon tallennettujen koordinaattien mukaisesti
+function drawWorm() { // Piirtää madon tallennettujen koordinaattien mukaisesti
     let ctx = myGameArea.context;
     ctx.clearRect(0, 0, myGameArea.canvas.width, myGameArea.canvas.height);
     for (let i = 0; i < wormSegments.length - 1; i++) {
@@ -209,7 +202,7 @@ function drawWorm() {                                                       //Pi
         ctx.stroke();
     }
 
-    let head = wormSegments[0];                                             //Piirtää madolle silmät
+    let head = wormSegments[0]; // Piirtää madolle silmät
     ctx.beginPath();
     ctx.arc(head.x - 2, head.y - 3, 1.5, 0, 2 * Math.PI);
     ctx.fillStyle = "darkbrown";
@@ -223,10 +216,6 @@ function drawWorm() {                                                       //Pi
     generateApple();
     checkCollision();
 }
-
-
-
-
 
 function generateAppleCoordinates() {
     let validApplePosition = false;
@@ -243,56 +232,49 @@ function generateAppleCoordinates() {
     }
 }
 
-
 function generateApple() {
     let ctx = myGameArea.context;
     let appleImg = document.getElementById("appleImg");
     ctx.drawImage(appleImg, appleX, appleY, 20, 25);
-
     checkCollision(appleX, appleY);
 }
-
-
-
-
 
 function checkCollision(appleX, appleY) {
     let head = wormSegments[0];
 
-    if (head.x <= 12 || head.x >= 792 || head.y <= 12 || head.y >= 392) {       //Tarkistetaan osuma alueen reunoihin
+    if (head.x <= 12 || head.x >= 792 || head.y <= 12 || head.y >= 392) { // Tarkistetaan osuma alueen reunoihin
+        playSound("gameover");
         gameOver();
     }
 
     for (let i = 1; i < wormSegments.length; i++) {
-        if (head.x === wormSegments[i].x && head.y === wormSegments[i].y) {     //Tarkistetaan madon osuma itseensä
+        if (head.x === wormSegments[i].x && head.y === wormSegments[i].y) { // Tarkistetaan madon osuma itseensä
+            playSound("gameover");
             gameOver();
         }
     }
 
-    if (Math.abs((head.x -8) - appleX) <= 12 && Math.abs((head.y -10) - appleY) <= 12) {   //Tarkistetaan omenan syönti
+    if (Math.abs((head.x -8) - appleX) <= 12 && Math.abs((head.y -10) - appleY) <= 12) { // Tarkistetaan omenan syönti
+        playSound("apple");
         points += difficulty;
         wormLength += 20;
         generateAppleCoordinates();
     }
 }
 
-
-
-
-
-function updateGameArea() {         //Kutsuu pelin toimintoja, eli huolehtii näytön päivityksestä.
+function updateGameArea() { // Kutsuu pelin toimintoja, eli huolehtii näytön päivityksestä.
     myGameArea.clear();
     worm.update();
-    gameArea.update();    
+    gameArea.update();
 }
 
-
-
-
-
 function gameOver() {
-    if (points > oldHiScore) {
+    if (points > hiScore) {
         localStorage.setItem('hiScore', points.toString());
     }
     myGameArea.stop();
+
+    // Näytä modaali-ikkuna
+    var gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
+    gameOverModal.show();
 }

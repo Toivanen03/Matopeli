@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Käärmetys</title>
+    <link rel="stylesheet" href="css/menu.css">
+</head>
+<body>
+    <div class="logo-container">
+        <img src="img/matologo.png" alt="Käärmetys Logo" class="logo">
+    </div>
+    <h1>Matopeli</h1>
+    <div class="middle">
+            <button type="button" onclick="startGame()">Aloita peli!</button>
+        </form>
+        <button onclick="showInstructions()">Pelin ohjeet</button>
+    </div>
+        <!-- Painike taustamusiikin on/off -->
+        <button id="toggleMusicButton" onclick="toggleMenuMusic()">Soita taustamusiikki</button>
+            <div class="credits">
+        <p>Eetu Svanström & Simo Toivanen</p>
+    </div>
+    <form id="difficultyForm">
+      <label for="difficulty">Valitse vaikeustaso (1-9):</label>  
+      <input type="number" id="difficulty" name="difficulty" min="1" max="9" value="1">
+
+    <!-- Modaali, joka näyttää ohjeet -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeInstructions()">&times;</span>
+            <h2>Pelin ohjeet</h2>
+            <p>Tyhjyyden kuminaa...</p>
+      </div>
+    </div>
+
+    <div class="floating-logos"></div>
+
+    <!-- äänitehosteet loopilla -->
+    <audio id="menubiisi" src="sounds/menubiisi.mp3" loop></audio>
+
+    <script>
+      let menuMusic;
+
+      function startGame() {
+        const difficulty = document.getElementById("difficulty").value;
+        localStorage.setItem("difficulty", difficulty);
+        stopMenuMusic();
+        window.location.href = "mato.html";
+      }
+
+      function showInstructions() {
+        document.getElementById("instructionsModal").style.display = "block";
+      }
+
+      function closeInstructions() {
+        document.getElementById("instructionsModal").style.display = "none";
+      }
+
+      function createFloatingLogo() {
+        const logoContainer = document.querySelector('.floating-logos');
+        const logo = document.createElement('img');
+        logo.src = 'img/matologo.png';
+        logo.className = 'floating-logo';
+        
+        logo.style.left = Math.random() * 100 + 'vw';
+        logo.style.animationDuration = Math.random() * 3 + 3 + 's';
+        
+        logoContainer.appendChild(logo);
+        
+        setTimeout(() => {
+          logoContainer.removeChild(logo);
+        }, 6000);
+      }
+
+      setInterval(createFloatingLogo, 500);
+
+      for (let i = 0; i < 10; i++) {
+        createFloatingLogo();
+      }
+
+      function playMenuMusic() { //valikon biisi päälle
+        menuMusic = document.getElementById("menubiisi");
+        menuMusic.play().catch(error => console.error("Virhe soitossa:", error));
+      }
+
+      function stopMenuMusic() {  //valikon biisi pois päältä, kun peli alkaa (mato.html)
+        if (menubiisi) {
+          menuMusic.pause();
+          menuMusic.currentTime = 0;
+        }
+      }
+
+      function toggleMenuMusic() {
+        menuMusic = document.getElementById("menubiisi");
+        const toggleButton = document.getElementById("toggleMusicButton");
+
+        if (menuMusic.paused) {
+          menuMusic.play().catch(error => console.error("Virhe soitossa:", error));
+          toggleButton.textContent = "Pysäytä taustamusiikki";
+        } else {
+          menuMusic.pause();
+          toggleButton.textContent = "Soita taustamusiikki";
+        }
+      }
+
+      window.onload = function() {
+        menuMusic = document.getElementById("menubiisi");
+      }
+    </script>
+  </body>
+</html>

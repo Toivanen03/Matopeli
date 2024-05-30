@@ -18,15 +18,15 @@
 
 </head>
 
-<body>
+  <body>
 
-  <div id="header"></div>
-  <script src="js/header.js"></script>
+    <div id="header"></div>
+    <script src="js/header.js"></script>
 
-<main>
+  <main>
 
-  <div class="container">
-    <img id="appleImg" src="img/apple.png" alt="Omena">
+    <div class="container">
+      <img id="appleImg" src="img/apple.png" alt="Omena">
     <h1>Matopeli</h1>
 
       <div class="row area text-center">
@@ -63,3 +63,26 @@
 
 </body>
 </html>
+
+    <!-- äänitehosteet -->
+    <audio id="startSound" src="sounds/start.mp3"></audio>
+    <audio id="appleSound" src="sounds/apple.mp3"></audio>
+    <audio id="gameOverSound" src="sounds/gameover.mp3"></audio>    
+    
+<!--- Modaali, joka ilmoittaa pelin päättymisestä --->
+<div class="modal fade" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="gameOverModalLabel">Peli ohi!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sulje"></button>
+      </div>
+      <div class="modal-body">
+        Peli on päättynyt!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Sulje</button>
+      </div>
+    </div>
+  </div>
+</div>
