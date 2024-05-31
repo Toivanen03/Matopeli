@@ -82,7 +82,20 @@ function playSound(sound) {
     }
 }
 
-function startGame() {                                              //Käynnistää canvasin ja päivittää näytön tapahtumia
+function startGame() {          //Käynnistää canvasin ja päivittää näytön tapahtumia
+    let countdown = 3;   //Pelin alkamisen yhteydessä olevan timerin asetus sekunteina
+    const timerModal = document.getElementById('timerModal');
+    const timerElement = document.getElementById('timer');
+
+    timerModal.style.display = 'block';
+    timerElement.textContent = countdown;
+
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            timerModal.style.display = 'none';
+
     playSound("start"); //soitetaan start-ääni
     myGameArea.start();
     gameArea = new drawGameArea(0, 0, 800, 400);                    //Kutsutaan funktiota luomaan canvas
@@ -104,7 +117,11 @@ function startGame() {                                              //Käynnist�
         if (event.key === "ArrowRight" && direction !== "left") {
             setMoveDirection("right");
         }
-    });                                                                 
+    }); 
+} else {
+    timerElement.textContent = countdown;
+}
+}, 1000);
 }
 
 let myGameArea = {                                                  //Luodaan canvas
