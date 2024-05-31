@@ -69,20 +69,16 @@
     <audio id="appleSound" src="sounds/apple.mp3"></audio>
     <audio id="gameOverSound" src="sounds/gameover.mp3"></audio>    
     
-<!--- Modaali, joka ilmoittaa pelin päättymisestä --->
-<div class="modal fade" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="gameOverModalLabel">Peli ohi!</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Sulje"></button>
-      </div>
-      <div class="modal-body">
-        Peli on päättynyt!
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Sulje</button>
-      </div>
-    </div>
+<!--- Modaali, joka ilmoittaa pelin päättymisestä ja pisteet --->
+<div id="gameOverModal" class="modal">
+  <div class="modal-content">
+      <h2>Peli ohi</h2>
+      <p>Hävisit pelin. Pisteesi: <span id="score"></span></p>
+      <button onclick="restartGame()">Pelaa uudestaan</button>
+      <button onclick="returnToMenu()">Palaa valikkoon</button>
   </div>
 </div>
+
+<script src="js/mato.js"></script>
+</body>
+</html>
