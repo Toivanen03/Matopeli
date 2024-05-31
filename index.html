@@ -12,26 +12,27 @@
     </div>
     <h1>Matopeli</h1>
     <div class="middle">
-            <button type="button" onclick="startGame()">Aloita peli!</button>
-        </form>
+        <button type="button" onclick="startGame()">Aloita peli!</button>
+    </form>
         <button onclick="showInstructions()">Pelin ohjeet</button>
-    </div>
         <!-- Painike taustamusiikin on/off -->
-        <button id="toggleMusicButton" onclick="toggleMenuMusic()">Soita taustamusiikki</button>
-            <div class="credits">
-        <p>Eetu Svanström & Simo Toivanen</p>
+        <button id="toggleMusicButton" onclick="toggleMenuMusic()">Pysäytä taustamusiikki</button>
+    </div>
+  
+    <div class="credits">
+      <p>Eetu Svanström & Simo Toivanen</p>
     </div>
     <form id="difficultyForm">
       <label for="difficulty">Valitse vaikeustaso (1-9):</label>  
       <input type="number" id="difficulty" name="difficulty" min="1" max="9" value="1">
 
-    <!-- Modaali, joka näyttää ohjeet -->
+    <!-- Modaali, joka kertoo pelin ohjeet -->
     <div id="instructionsModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeInstructions()">&times;</span>
             <h2>Pelin ohjeet</h2>
             <p>Tyhjyyden kuminaa...</p>
-      </div>
+        </div>
     </div>
 
     <div class="floating-logos"></div>
@@ -41,23 +42,24 @@
 
     <script>
       let menuMusic;
+      let musicPlaying = false;
 
-      function startGame() {
+      function startGame() { 
         const difficulty = document.getElementById("difficulty").value;
         localStorage.setItem("difficulty", difficulty);
         stopMenuMusic();
         window.location.href = "mato.html";
       }
 
-      function showInstructions() {
+      function showInstructions() { //infoboksi päälle
         document.getElementById("instructionsModal").style.display = "block";
       }
 
-      function closeInstructions() {
+      function closeInstructions() { //infoboksi pois
         document.getElementById("instructionsModal").style.display = "none";
       }
 
-      function createFloatingLogo() {
+      function createFloatingLogo() { //ylhäältä alas tippuvat käärmeen kuvat
         const logoContainer = document.querySelector('.floating-logos');
         const logo = document.createElement('img');
         logo.src = 'img/matologo.png';
@@ -79,33 +81,32 @@
         createFloatingLogo();
       }
 
-      function playMenuMusic() { //valikon biisi päälle
+      function playMenuMusic() {  //valikon biisi päälle
         menuMusic = document.getElementById("menubiisi");
         menuMusic.play().catch(error => console.error("Virhe soitossa:", error));
+        musicPlaying = true;
+        document.getElementById("toggleMusicButton").textContent = "Pysäytä taustamusiikki";
       }
 
       function stopMenuMusic() {  //valikon biisi pois päältä, kun peli alkaa (mato.html)
         if (menubiisi) {
           menuMusic.pause();
           menuMusic.currentTime = 0;
+          musicPlaying = false;
+          document.getElementById("toggleMusicButton").textContent = "Soita taustamusiikki";
         }
       }
 
       function toggleMenuMusic() {
-        menuMusic = document.getElementById("menubiisi");
-        const toggleButton = document.getElementById("toggleMusicButton");
-
-        if (menuMusic.paused) {
-          menuMusic.play().catch(error => console.error("Virhe soitossa:", error));
-          toggleButton.textContent = "Pysäytä taustamusiikki";
+        if (musicPlaying) {
+          stopMenuMusic();
         } else {
-          menuMusic.pause();
-          toggleButton.textContent = "Soita taustamusiikki";
+          playMenuMusic();
         }
       }
 
       window.onload = function() {
-        menuMusic = document.getElementById("menubiisi");
+        playMenuMusic();
       }
     </script>
   </body>
