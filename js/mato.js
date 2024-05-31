@@ -83,7 +83,7 @@ function playSound(sound) {
 }
 
 function startGame() {                                              //Käynnistää canvasin ja päivittää näytön tapahtumia
-    playSound("start");
+    playSound("start"); //soitetaan start-ääni
     myGameArea.start();
     gameArea = new drawGameArea(0, 0, 800, 400);                    //Kutsutaan funktiota luomaan canvas
     worm = new generateWorm(wormX, wormY);                          //Kutsutaan funktiota piirtämään mato
@@ -243,19 +243,19 @@ function checkCollision(appleX, appleY) {
     let head = wormSegments[0];
 
     if (head.x <= 12 || head.x >= 792 || head.y <= 12 || head.y >= 392) { // Tarkistetaan osuma alueen reunoihin
-        playSound("gameover");
+        playSound("gameover"); //soitetaan gameover-ääni
         gameOver();
     }
 
     for (let i = 1; i < wormSegments.length; i++) {
         if (head.x === wormSegments[i].x && head.y === wormSegments[i].y) { // Tarkistetaan madon osuma itseensä
-            playSound("gameover");
+            playSound("gameover"); //soitetaan gameover-ääni
             gameOver();
         }
     }
 
     if (Math.abs((head.x -8) - appleX) <= 12 && Math.abs((head.y -10) - appleY) <= 12) { // Tarkistetaan omenan syönti
-        playSound("apple");
+        playSound("apple"); //soitetaan omena-ääni
         points += difficulty;
         wormLength += 20;
         generateAppleCoordinates();
@@ -273,8 +273,15 @@ function gameOver() {
         localStorage.setItem('hiScore', points.toString());
     }
     myGameArea.stop();
-
-    // Näytä modaali-ikkuna
+    document.getElementById('score').textContent = points;
     var gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
     gameOverModal.show();
+}
+
+function returnToMenu() {  //palataan pelin menuun (index.html)
+    window.location.href = "index.html";
+}
+
+function restartGame() {  //aloitetaan peli uudestaan, jos käyttäjä valitsee. Lataa uudelleen mato.html tiedoston
+    location.reload();
 }
