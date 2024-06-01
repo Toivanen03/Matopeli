@@ -1,0 +1,22 @@
+.logo-container {
+    font-family: "Share Tech Mono", monospace;
+    text-align: center;
+    background-color: #19202e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+    overflow: hidden;
+    width: 30vw;
+    height: 40vh;
+    border: solid 5px lightgray;
+    border-radius: 20px;
+  }
+
+.logo-container img {
+    width: 10vw;
+}

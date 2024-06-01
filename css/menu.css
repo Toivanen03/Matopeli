@@ -64,7 +64,6 @@ button {
   background-color: #19202e;
 }
 
-/* Modaalille rajat */
 .modal {
   display: none;
   position: fixed;
@@ -104,27 +103,26 @@ button {
 
 .floating-logo {
   position: absolute;
-  top: 0; /* Muutettu bottom: 0 tilalle */
-  width: 50px; /* Muokkaa kokoa tarpeen mukaan */
+  top: 0;
+  width: 50px;
   height: auto;
-  animation: floatDown 5s linear infinite; /* Muutettu floatUp tilalle floatDown */
+  animation: floatDown 5s linear infinite;
 }
 
 @keyframes floatDown {
   0% {
-    transform: translateY(-100vh) rotate(0deg); /* Muutettu translateY(100vh) tilalle translateY(-100vh) */
+    transform: translateY(-100vh) rotate(0deg);
     opacity: 0;
   }
   25% {
     opacity: 1;
   }
   100% {
-    transform: translateY(100vh) rotate(360deg); /* Muutettu translateY(-100vh) tilalle translateY(100vh) */
+    transform: translateY(100vh) rotate(360deg);
     opacity: 0;
   }
 }
 
-
-
-
-
+.hiScore {            /* Lisätty ennätysnäytön muotoilu -ST */
+  color: white;
+}

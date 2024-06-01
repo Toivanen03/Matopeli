@@ -160,4 +160,8 @@
     #appleImg {
         display: none;
     }
+
+    .hidden {
+        display: none;
+    }
 }

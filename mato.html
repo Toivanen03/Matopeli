@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matopeli</title>
-    <link rel="icon" type="image/x-icon" href="img/favicon/worm.png">
+    <link rel="icon" type="image/x-icon" href="/img/favicon/worm.png">
     <meta name="description" content="Legendaarinen matopeli modernisoituna versiona!">
     <meta property="og:title" content="Matopeli">
     <meta property="og:description" content="Legendaarinen matopeli modernisoituna versiona!">
@@ -27,19 +27,21 @@
 
     <div class="container">
       <img id="appleImg" src="img/apple.png" alt="Omena">
-    <h1>Matopeli</h1>
+      <h1>Matopeli</h1>
 
-      <div class="row area text-center">
+      <div class="row area text-center align-items-center">
 
-        <div class="col-md-2">
+        <div class="col-md-2 text-center">
           <div class="row">
             <div id="pointsArea" class="pointsArea">
               <span id="pointsHeader"></span>
             </div>
+            <br>
           </div>
           <div class="row">
             <div id="hiScoreArea" class="hiScoreArea">
               <span id="hiScoreHeader"></span>
+              <span id="hiScoreHolder"></span>
             </div>
           </div>
         </div>
@@ -51,9 +53,66 @@
           </div>
         </div>
 
-      </div>
-    
+      </div>    
+    </div>
+
+  <audio id="startSound" src="sounds/start.mp3"></audio>
+  <audio id="appleSound" src="sounds/apple.mp3"></audio>
+  <audio id="gameOverSound" src="sounds/gameover.mp3"></audio>
+  <audio id="kumitvinkuu" src="sounds/kumitvinkuu.mp3"></audio>
+
+  <div class="modal fade" id="timerModal" tabindex="-1" aria-labelledby="timerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="timerModalLabel"><b>Valmiina!</b></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="timer" src="/img/3.png" style="width: 8vw; height: 18vh;" alt="Timer" />
+            </div>
+        </div>
+    </div>
   </div>
+  
+  <div class="modal fade" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="gameOverModalLabel"><b>Peli päättyi.</b></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <div class="row text-center">
+            <p style="font-size: large;">Pisteesi: <b><span id="score"></span></b></p>
+          </div>
+
+          <div class="row align-items-center justify-content-center">
+            <div class="col-1"></div>
+            <div class="col-4">
+              <input type="text" id="playerNameField" class="hidden text-center" style="width: 12vw;" placeholder="Anna nimesi:">
+            </div>
+            <div class="col-4">
+              <a onclick="saveHiScore()" id="saveHiScoreButton" style="width: 12vw;" class="frontPageButton btn btn-primary my-2 hidden">Tallenna tulos</a>
+            </div>
+          </div>
+
+          <br><br>
+
+          <div class="row align-items-center justify-content-center">
+            <div class="col-6">
+              <a onclick="restartGame()" class="frontPageButton btn btn-primary my-2" style="width: 12vw;">Pelaa uudestaan</a>
+            </div>
+            <div class="col-6">
+              <a onclick="returnToMenu()" class="frontPageButton btn btn-primary my-2" style="width: 12vw;">Palaa valikkoon</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>        <!-- Modaaleja muokattu ulkoasultaan siistimmiksi -ST -->
+  
+
 
 </main>
          
@@ -61,32 +120,5 @@
     <script src="js/footer.js"></script>
 </div>
 
-</body>
-</html>
-
-    <!-- äänitehosteet -->
-    <audio id="startSound" src="sounds/start.mp3"></audio>
-    <audio id="appleSound" src="sounds/apple.mp3"></audio>
-    <audio id="gameOverSound" src="sounds/gameover.mp3"></audio>    
-
-    <!-- Ajanotto pelin alkaessa -->
-    <div id="timerModal" class="modal">
-      <div class="modal-content">
-          <h2>Peli alkaa:</h2>
-          <p>Aloitus <span id="timer">3</span> sekunnin kuluttua!</p>
-      </div>
-  </div>
-    
-<!--- Modaali, joka ilmoittaa pelin päättymisestä ja pisteet --->
-<div id="gameOverModal" class="modal">
-  <div class="modal-content">
-      <h2>Peli ohi</h2>
-      <p>Hävisit pelin. Pisteesi: <span id="score"></span></p>
-      <button onclick="restartGame()">Pelaa uudestaan</button>
-      <button onclick="returnToMenu()">Palaa valikkoon</button>
-  </div>
-</div>
-
-<script src="js/mato.js"></script>
 </body>
 </html>

@@ -3,111 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Käärmetys</title>
-    <link rel="stylesheet" href="css/menu.css">
+    <title>Matopeli</title>
+    <link rel="icon" type="image/x-icon" href="/img/favicon/worm.png">
+    <meta name="description" content="Legendaarinen matopeli modernisoituna versiona!">
+    <meta property="og:title" content="Matopeli">
+    <meta property="og:description" content="Legendaarinen matopeli modernisoituna versiona!">
+    <meta property="og:image" content="img/icon/worm.png">
+    <meta property="og:url" content="https://www.simotoivanen.fi/matopeli/mato.html">
+    <link href="/Bootstrap/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/Bootstrap/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width: 1024px)" href="css/styles.css">
+    <link rel="stylesheet" media="screen and (min-width: 1024px)" href="css/intro.css">
+    <link rel="stylesheet" media="screen and (max-width: 1023px)" href="css/mobile_styles.css">
+
 </head>
-<body>
-    <div class="logo-container">
-        <img src="img/matologo.png" alt="Käärmetys Logo" class="logo">
-    </div>
+
+  <body>
+
+    <div id="header"></div>
+    <script src="js/header.js"></script>
+
+  <main>                      <!-- Tehty uusi index.html automaattisen äänentoiston eston kiertämiseksi. -ST-->
+
     <h1>Matopeli</h1>
-    <div class="middle">
-        <button type="button" onclick="startGame()">Aloita peli!</button>
-    </form>
-        <button onclick="showInstructions()">Pelin ohjeet</button>
-        <!-- Painike taustamusiikin on/off -->
-        <button id="toggleMusicButton" onclick="toggleMenuMusic()">Pysäytä taustamusiikki</button>
-    </div>
-  
-    <div class="credits">
-      <p>Eetu Svanström & Simo Toivanen</p>
-    </div>
-    <form id="difficultyForm">
-      <label for="difficulty">Valitse vaikeustaso (1-9):</label>  
-      <input type="number" id="difficulty" name="difficulty" min="1" max="9" value="1">
 
-    <!-- Modaali, joka kertoo pelin ohjeet -->
-    <div id="instructionsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeInstructions()">&times;</span>
-            <h2>Pelin ohjeet</h2>
-            <p>Tyhjyyden kuminaa...</p>
-        </div>
+    <div class="logo-container">
+      <img src="img/matologo.png" alt="Käärmetys Logo" class="logo">
+      <a onclick="location.href='menu.html'" class="frontPageButton btn btn-primary my-2">Pelaa matopeliä!</a>
     </div>
 
-    <div class="floating-logos"></div>
+  </main>
 
-    <!-- äänitehosteet loopilla -->
-    <audio id="menubiisi" src="sounds/menubiisi.mp3" loop></audio>
+  <div id="footer">
+    <script src="js/footer.js"></script>
+  </div>
 
-    <script>
-      let menuMusic;
-      let musicPlaying = false;
-
-      function startGame() { 
-        const difficulty = document.getElementById("difficulty").value;
-        localStorage.setItem("difficulty", difficulty);
-        stopMenuMusic();
-        window.location.href = "mato.html";
-      }
-
-      function showInstructions() { //infoboksi päälle
-        document.getElementById("instructionsModal").style.display = "block";
-      }
-
-      function closeInstructions() { //infoboksi pois
-        document.getElementById("instructionsModal").style.display = "none";
-      }
-
-      function createFloatingLogo() { //ylhäältä alas tippuvat käärmeen kuvat
-        const logoContainer = document.querySelector('.floating-logos');
-        const logo = document.createElement('img');
-        logo.src = 'img/matologo.png';
-        logo.className = 'floating-logo';
-        
-        logo.style.left = Math.random() * 100 + 'vw';
-        logo.style.animationDuration = Math.random() * 3 + 3 + 's';
-        
-        logoContainer.appendChild(logo);
-        
-        setTimeout(() => {
-          logoContainer.removeChild(logo);
-        }, 6000);
-      }
-
-      setInterval(createFloatingLogo, 500);
-
-      for (let i = 0; i < 10; i++) {
-        createFloatingLogo();
-      }
-
-      function playMenuMusic() {  //valikon biisi päälle
-        menuMusic = document.getElementById("menubiisi");
-        menuMusic.play().catch(error => console.error("Virhe soitossa:", error));
-        musicPlaying = true;
-        document.getElementById("toggleMusicButton").textContent = "Pysäytä taustamusiikki";
-      }
-
-      function stopMenuMusic() {  //valikon biisi pois päältä, kun peli alkaa (mato.html)
-        if (menubiisi) {
-          menuMusic.pause();
-          menuMusic.currentTime = 0;
-          musicPlaying = false;
-          document.getElementById("toggleMusicButton").textContent = "Soita taustamusiikki";
-        }
-      }
-
-      function toggleMenuMusic() {
-        if (musicPlaying) {
-          stopMenuMusic();
-        } else {
-          playMenuMusic();
-        }
-      }
-
-      window.onload = function() {
-        playMenuMusic();
-      }
-    </script>
-  </body>
+</body>
 </html>

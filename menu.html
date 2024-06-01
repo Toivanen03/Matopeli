@@ -1,0 +1,134 @@
+<!DOCTYPE html>             <!-- Valikko nimetty uudelleen, sivulle saavutaan uuden index.html-sivun kautta -ST -->
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Käärmetys</title>
+    <link rel="icon" type="image/x-icon" href="/img/favicon/worm.png">
+    <link rel="stylesheet" href="css/menu.css">
+</head>
+<body>
+    <div class="logo-container">
+        <img src="img/matologo.png" alt="Käärmetys Logo" class="logo">
+    </div>
+    <h1>Matopeli</h1>
+    <div class="middle">
+        <button type="button" onclick="startGame()">Aloita peli!</button>
+    </form>
+        <button onclick="showInstructions()">Pelin ohjeet</button>
+        <!-- Painike taustamusiikin on/off -->
+        <button id="toggleMusicButton" onclick="toggleMenuMusic()">Pysäytä taustamusiikki</button>
+    </div>
+  
+    <div class="credits">
+      <p>Eetu Svanström & Simo Toivanen</p>
+    </div>
+    <form id="difficultyForm">
+      <label for="difficulty">Valitse vaikeustaso (1-9):</label>  
+      <input type="number" id="difficulty" name="difficulty" min="1" max="9" value="5">
+
+    <!-- Modaali, joka kertoo pelin ohjeet -->
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeInstructions()">&times;</span>
+            <h2>Pelin ohjeet</h2>
+            <p>Tyhjyyden kuminaa...</p>
+        </div>
+    </div>
+
+    <div class="floating-logos"></div>
+
+    <!-- äänitehosteet loopilla -->
+    <audio id="menubiisi" src="sounds/menubiisi.mp3" loop></audio>
+
+    <script>
+      let menuMusic;
+      let musicPlaying = false;
+
+      function startGame() { 
+        const difficulty = document.getElementById("difficulty").value;
+        localStorage.setItem("difficulty", difficulty);
+        stopMenuMusic();
+        window.location.href = "mato.html";
+      }
+
+      function showInstructions() { //infoboksi päälle
+        document.getElementById("instructionsModal").style.display = "block";
+      }
+
+      function closeInstructions() { //infoboksi pois
+        document.getElementById("instructionsModal").style.display = "none";
+      }
+
+      function createFloatingLogo() { //ylhäältä alas tippuvat käärmeen kuvat
+        const logoContainer = document.querySelector('.floating-logos');
+        const logo = document.createElement('img');
+        logo.src = 'img/matologo.png';
+        logo.className = 'floating-logo';
+        
+        logo.style.left = Math.random() * 100 + 'vw';
+        logo.style.animationDuration = Math.random() * 3 + 3 + 's';
+        
+        logoContainer.appendChild(logo);
+        
+        setTimeout(() => {
+          logoContainer.removeChild(logo);
+        }, 6000);
+      }
+
+      setInterval(createFloatingLogo, 500);
+
+      for (let i = 0; i < 10; i++) {
+        createFloatingLogo();
+      }
+
+      function playMenuMusic() {  //valikon biisi päälle
+        menuMusic = document.getElementById("menubiisi");
+        menuMusic.play().catch(error => console.error("Virhe soitossa:", error));
+        musicPlaying = true;
+        document.getElementById("toggleMusicButton").textContent = "Pysäytä taustamusiikki";
+      }
+
+      function stopMenuMusic() {  //valikon biisi pois päältä, kun peli alkaa (mato.html)
+        if (menubiisi) {
+          menuMusic.pause();
+          menuMusic.currentTime = 0;
+          musicPlaying = false;
+          document.getElementById("toggleMusicButton").textContent = "Soita taustamusiikki";
+        }
+      }
+
+      function toggleMenuMusic() {
+        if (musicPlaying) {
+          stopMenuMusic();
+        } else {
+          playMenuMusic();
+        }
+      }
+
+      window.onload = function() {
+        playMenuMusic();
+      }
+    </script>
+
+    <div class="hiScore">                                         <!-- Lisätty ennätyksen näyttö alkuvalikkoon -ST -->
+      <br><br>
+      <p>Ennätys:</p>
+      <span id="hiScoreHolder"></span>
+      <span id="hiScore"></span>
+    </div>
+
+    <script>
+      let name = localStorage.getItem("playerName");
+      let score = localStorage.getItem("hiScore");
+      if (name != null && score != null) {
+        document.getElementById("hiScoreHolder").innerHTML = name;
+        document.getElementById("hiScore").innerHTML = score;
+      } else {
+        document.getElementById("hiScoreHolder").innerHTML = "Ei ennätystä";
+      }
+    </script>
+
+
+  </body>
+</html>

@@ -1,5 +1,7 @@
 let oldHiScore = hiScore;               //Tallennetaan aiempi ennätystulos uuteen muuttujaan. Tämä mahdollistaa pisteiden pelinaikaisen
                                         //päivittämisen ja oikean tallentamisen mato.js-scriptissä.
+
+
 function starthiScore() {                                               //Käynnistää canvasin ja päivittää ennätysnäyttöä
     myhiScoreArea.start();
     hiScoreArea = new drawHiScoreArea();                                //Kutsutaan funktiota luomaan canvas
@@ -39,10 +41,17 @@ function drawHiScoreArea() {                                //Luodaan canvas enn
     }
 }
 
+
+
+
 function handlehiScore(ctx) {                                                   //Funktio on ennätystuloksen tallentamista ja muuttujien
     document.getElementById("hiScoreHeader").innerHTML = "<h3>Ennätys</h3>";    //nimiä lukuunottamatta identtinen pistelaskurin kanssa
-    if (points > hiScore) {
+    document.getElementById("hiScoreHolder").innerHTML = hiScoreHolder;
+    if (points >= hiScore && !gameStop) {
         hiScore = points;
+        hiScoreHolder = "Uusi ennätys!";
+        localStorage.setItem("hiScore", hiScore);                   //Pisteet tallennetaan localStorageen, samoin oletusnimi siltä
+        localStorage.setItem("playerName", "Nimetön pelaaja");      //varalta, ettei pelaaja syötä nimeään pelin päätteeksi
     }
     let hiScoreString = hiScore.toString();
 
@@ -54,6 +63,9 @@ function handlehiScore(ctx) {                                                   
         startX -= (segmentWidth + 10);
     }
 }
+
+
+
 
 function drawNumber(ctx, number, startX) {
     let segmentWidth = 20;
@@ -152,8 +164,9 @@ function drawNumber(ctx, number, startX) {
 
 
 
-
 function updatehiScoreArea() {         //Kutsuu toimintoja, eli huolehtii näytön päivityksestä.
-    myhiScoreArea.clear();
-    hiScoreArea.update();    
+    if (!gameStop) {
+        myhiScoreArea.clear();
+        hiScoreArea.update();
+    }
 }
