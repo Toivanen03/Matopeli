@@ -126,3 +126,7 @@ button {
 .hiScore {            /* Lisätty ennätysnäytön muotoilu -ST */
   color: white;
 }
+
+label {               /* Lisätty vaikeustason valintaboksille väri */
+  color: white;
+}
