@@ -3,6 +3,9 @@ let moveDown;
 let moveLeft;
 let moveRight = true;
 let direction = "right";
+
+let turnCount = 0;                                                  //Käännösten määrää lasketaan ääniefektin toistamiseksi
+let turnTimer = null;
    
 let difficultyOption = {                                            //Vaikeustason vaihtoehdot. Arvo vastaa näytön päivitystaajuutta.
 1: 17,  
@@ -27,7 +30,7 @@ let turnPoints = [];
 let appleX;                                                         //Omenan koordinaatit
 let appleY;
 
-let points = 0;
+let points = 0;                                                     //Pisteiden muuttujat ja lataus localStoragesta, mikäli olemassa
 let playerName;
 const savedHiScore = localStorage.getItem("hiScore");
 let hiScore = savedHiScore ? parseInt(savedHiScore) : 0;
@@ -51,8 +54,8 @@ window.onload = function() {                //Alkulataukset
 
 
 
-function loadScripts(callback) {                //Ladataan apuscriptit
-    let scriptsToLoad = 2;
+function loadScripts(callback) {                //Ladataan apuscriptit, eli pisteiden sekä ennätyksen näytöt, jotka
+    let scriptsToLoad = 2;                      //molemmat tulostuvat pelialueen ulkopuolisille canvas-elementeille.
     let scriptsLoaded = 0;
 
     function scriptLoaded() {
@@ -89,12 +92,17 @@ function playSound(sound) {                                         //Toistetaan
     } else if (sound === "gameover") {
         audioElement = document.getElementById("gameOverSound");
     }
-    if (audioElement) {
+
+    if (audioElement) {                             //Lisätty äänen toistamiseksi alusta, mikäli uusi tuplakäännös tapahtuu. -ST
+        if (sound === "kumitvinkuu") {
+            audioElement.currentTime = 0;
+        }
         audioElement.play().catch(error => {
-            console.error("TESTIP, VIRHE ÄÄNENTOISTOSSA:", error);
+            console.error("VIRHE ÄÄNENTOISTOSSA:", error);
         });
     }
 }
+
 
 
 
@@ -164,8 +172,25 @@ let myGameArea = {                                                              
 
 function setMoveDirection(newDirection) {
     if (newDirection !== direction) {                                           //Tallennetaan nykyinen ja uusi sijainti
-        turnPoints.push({ x: wormSegments[0].x, y: wormSegments[0].y, newDirection: newDirection });
+        turnPoints.push({x: wormSegments[0].x, y: wormSegments[0].y, newDirection: newDirection});
+        turnCount += 1;
+
+        if (turnTimer !== null) {                   //Tarkkaillaan, onko tapahtunut kaksi peräkkäistä käännöstä
+            clearTimeout(turnTimer);                //annetun aikarajan puitteissa
+        }
+        turnTimer = setTimeout(function() {
+            turnCount = 0;
+            turnTimer = null;
+        }, 200);
+
+        if (turnCount === 2) {                      //Äänitehoste toistetaan, mikäli täyskäännös on tapahtunut.
+            playSound("kumitvinkuu");
+            turnCount = 0;
+            clearTimeout(turnTimer);
+            turnTimer = null;
+        }
     }
+
     moveUp = moveDown = moveLeft = moveRight = false;                           //Kaikki suuntamuuttujat asetetaan arvoon false,
     direction = newDirection;                                                   //ennen kuin uusi suunta määrätään.
 
@@ -178,7 +203,6 @@ function setMoveDirection(newDirection) {
     } else if (newDirection === "right") {
         moveRight = true;
     }
-    playSound("kumitvinkuu");
 }
 
 
@@ -274,7 +298,7 @@ function generateAppleCoordinates() {                               //Tarkisteta
         appleY = Math.floor(Math.random() * 185) * 2 + 10;
         validApplePosition = true;
         for (let i = 0; i < wormSegments.length; i++) {
-            if (Math.abs(wormSegments[i].x - appleX) < 12 && Math.abs(wormSegments[i].y - appleY) < 12) {
+            if (Math.abs(wormSegments[i].x - appleX) < 24 && Math.abs(wormSegments[i].y - appleY) < 24) {
                 validApplePosition = false;
                 break;
             }
@@ -286,6 +310,12 @@ function generateAppleCoordinates() {                               //Tarkisteta
 
 
 function generateApple() {                                          //Asettaa omenan canvasille
+    if (appleX >= 385 * 2) {                                        //Varmistetaan, ettei kuva tulostu canvasin ulkopuolelle
+        appleX -= 20;
+    }
+    if (appleY >= 185 * 2) {
+        appleY -= 25;
+    }
     let ctx = myGameArea.context;
     let appleImg = document.getElementById("appleImg");
     ctx.drawImage(appleImg, appleX, appleY, 20, 25);
@@ -298,7 +328,7 @@ function generateApple() {                                          //Asettaa om
 function checkCollision(appleX, appleY) {
     let head = wormSegments[0];
 
-    if (head.x <= 12 || head.x >= 792 || head.y <= 12 || head.y >= 392) {                           //Tarkistetaan osuma alueen reunoihin
+    if (head.x <= 8 || head.x >= 794 || head.y <= 8 || head.y >= 394) {                           //Tarkistetaan osuma alueen reunoihin
         playSound("gameover");                                                                      //soitetaan gameover-ääni
         gameOver();
     }
@@ -347,11 +377,11 @@ function gameOver() {
 
 
 
-function saveHiScore() {                                                    //Nimen tallennus, pelaajan halutessa
+function saveHiScore() {                                                    //Nimen tallennus, pelaajan halutessa. Muuten talletus oletusnimellä.
     gameStop = true;
     localStorage.removeItem(playerName);
     let nameInput = document.getElementById("playerNameField");
-    playerName = nameInput.value;
+    playerName = nameInput.value || "Nimetön pelaaja";
     localStorage.setItem("hiScore", hiScore);
     localStorage.setItem("playerName", playerName);
     document.getElementById("playerNameField").style.display = "none";
