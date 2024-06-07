@@ -113,7 +113,7 @@ function startGame() {                                              //K√§ynnist√
     const timerElement = document.getElementById("timer");
 
     timerModal.show();
-    timerElement.src = "/img/" + countdown + ".png";
+    timerElement.src = "img/" + countdown + ".png";
 
     const countdownInterval = setInterval(() => {
         countdown--;
@@ -144,7 +144,7 @@ function startGame() {                                              //K√§ynnist√
         }
     }); 
 } else {
-    timerElement.src = "/img/" + countdown + ".png";
+    timerElement.src = "img/" + countdown + ".png";
 }
 }, 1000);
 }
